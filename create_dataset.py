@@ -1,0 +1,61 @@
+import pandas as pd
+from sklearn.preprocessing import normalize
+
+landslides = pd.read_csv("./datasets/landslides.csv")
+slopes = pd.read_csv("./datasets/slope.csv")
+landform = pd.read_csv("./datasets/landform.csv")
+landuse = pd.read_csv("./datasets/landuse.csv")
+vegetation = pd.read_csv("./datasets/vegetation.csv")
+
+landslides = landslides.replace(255, 0)
+landslides = landslides.replace([1, 2, 3, 4, 5, 6, 7, 8], 1)
+
+print("before extract")
+print(slopes.shape)
+print(landform.shape)
+print(landuse.shape)
+print(vegetation.shape)
+
+
+def extract_data_points(layer):
+    set1 = layer.ix[:499, :800]
+    set2 = layer.ix[500:, :]
+
+    set1R = set1.values.reshape(500*800, 1)
+    set2R = set2.values.reshape(500*1600, 1)
+
+    return pd.concat([pd.DataFrame(set1R), pd.DataFrame(set2R)], axis=0)
+
+for rows in range(81):
+    landslides.loc[-1] = [0 for x in range(1539)]
+    landslides.index = landslides.index + 1
+
+landslides = landslides.sort_index()
+
+for cols in range(1539, 1600):
+    landslides[cols] = [0 for x in range(1000)]
+
+slope_data = extract_data_points(slopes)
+landform_data = extract_data_points(landform)
+landslides_data = extract_data_points(landslides)
+landuse_data = extract_data_points(landuse)
+vegetation_data = extract_data_points(vegetation)
+
+print("After extract")
+print(slope_data.shape)
+print(landform_data.shape)
+print(landslides_data.shape)
+print(landuse_data.shape)
+print(vegetation_data.shape)
+
+# print("slope\n", slope_data.head())
+# print("landform\n", landform_data.head())
+
+inputData = pd.concat([slope_data, landform_data, landuse_data, vegetation_data], axis=1)
+#inputData = normalize(inputData)
+#inputData = pd.DataFrame(inputData, columns=["slope", "landform", "landuse", "vegetation"])
+# print("input\n", inputData.head())
+
+inputData.to_csv("input_data.csv")
+# landslides_data.to_csv("outputs.csv")
+print("done")
