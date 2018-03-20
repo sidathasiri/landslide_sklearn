@@ -6,6 +6,7 @@ slopes = pd.read_csv("./datasets/slope.csv")
 landform = pd.read_csv("./datasets/landform.csv")
 landuse = pd.read_csv("./datasets/landuse.csv")
 vegetation = pd.read_csv("./datasets/vegetation.csv")
+drainage_density = pd.read_csv("./datasets/drainage_density.csv")
 
 landslides = landslides.replace(255, 0)
 landslides = landslides.replace([1, 2, 3, 4, 5, 6, 7, 8], 1)
@@ -15,7 +16,7 @@ print(slopes.shape)
 print(landform.shape)
 print(landuse.shape)
 print(vegetation.shape)
-
+print(drainage_density.shape)
 
 def extract_data_points(layer):
     set1 = layer.ix[:499, :800]
@@ -40,6 +41,7 @@ landform_data = extract_data_points(landform)
 landslides_data = extract_data_points(landslides)
 landuse_data = extract_data_points(landuse)
 vegetation_data = extract_data_points(vegetation)
+drainage_density_data = extract_data_points(drainage_density)
 
 print("After extract")
 print(slope_data.shape)
@@ -47,15 +49,16 @@ print(landform_data.shape)
 print(landslides_data.shape)
 print(landuse_data.shape)
 print(vegetation_data.shape)
+print(drainage_density_data.shape)
 
 # print("slope\n", slope_data.head())
 # print("landform\n", landform_data.head())
 
-inputData = pd.concat([slope_data, landform_data, landuse_data, vegetation_data], axis=1)
+inputData = pd.concat([slope_data, landform_data, landuse_data, vegetation_data, drainage_density_data], axis=1)
 #inputData = normalize(inputData)
 #inputData = pd.DataFrame(inputData, columns=["slope", "landform", "landuse", "vegetation"])
 # print("input\n", inputData.head())
 
-inputData.to_csv("input_data.csv")
-# landslides_data.to_csv("outputs.csv")
+inputData.to_csv("input_data.csv", index=False)
+landslides_data.to_csv("outputs.csv", index=False)
 print("done")
