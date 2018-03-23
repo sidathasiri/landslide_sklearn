@@ -6,25 +6,27 @@ from sklearn.model_selection import train_test_split
 input_data = pd.read_csv("input_data.csv")
 output_data = pd.read_csv("outputs.csv")
 
-# print(input_data.shape)
-# print(output_data.shape)
-
+#divide train test sets
 x_train, x_test, y_train, y_test = train_test_split(input_data, output_data, random_state=0)
 
-# print(y_train.ix[:,0])
+mlp = MLPClassifier(activation="relu", random_state=1, solver="adam", hidden_layer_sizes=(10, 12, 10))
 
-mlp = MLPClassifier(activation="logistic", solver="sgd", random_state=1)
-
-indexes = np.where(y_train == 1)[0]
-
+print("Started training model...")
 mlp.fit(x_train, y_train.ix[:, 0])
-
-print("train successful")
-print("Accuracy on train data:", mlp.score(x_train, y_train.ix[:,0]))
-print("Accuracy on test data:", mlp.score(x_test, y_test))
+print("Train complete!")
 
 pred = mlp.predict(x_test)
-print("total test size:", len(x_test))
-x = np.count_nonzero(pred==1)
-print("predicted:", x)
-print("actual landslides:", np.count_nonzero(y_test))
+
+print("Predicted landslides cells:", (pred == 1).sum())
+print("Actual landslides cells:", np.count_nonzero(y_test))
+
+predicitonLoc = np.where(pred == 1)[0]  #predicted landslide locations
+actualLoc = np.where(y_test == 1)[0]    #actual landslide locations
+
+#counting correct predictions
+counter = 0
+for i in predicitonLoc:
+    if(i in actualLoc):
+        counter += 1
+
+print("Correct predictions: ", counter)
